@@ -7,6 +7,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="shortcut icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/747/747310.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/brands.min.css">
+</head>
+  
+  
   <style>
     :root {
       --primary: #4361ee;
@@ -85,13 +91,6 @@
     .input-group {
       margin-bottom: 1rem;
       text-align: left;
-    }
-    
-    .input-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: var(--text-light);
-      font-size: 0.9rem;
     }
     
     .input-group input,
@@ -216,6 +215,37 @@
       font-size: 0.9rem;
     }
     
+    /* Global Countdown */
+    .global-countdown-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      border: 2px solid var(--primary);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .global-countdown-title {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .global-countdown-value {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--danger);
+      transition: var(--transition);
+    }
+
+    .global-countdown-card.urgent .global-countdown-value {
+      animation: pulse-urgent 1s infinite alternate;
+    }
+    
     /* Task List */
     .task-list {
       background: var(--card-bg);
@@ -240,6 +270,37 @@
       background: rgba(0, 0, 0, 0.02);
     }
     
+    .task-item.highlight {
+      background: rgba(var(--primary-rgb), 0.05); /* Mix with background */
+      animation: pulse-highlight 2s infinite alternate;
+    }
+
+    /* Helper for highlight effect */
+    :root {
+      --primary-rgb: 67, 97, 238; /* RGB for #4361ee */
+    }
+
+    /* Highlight pulse animation */
+    @keyframes pulse-highlight {
+      0% {
+        background-color: rgba(var(--primary-rgb), 0.05);
+      }
+      100% {
+        background-color: rgba(var(--primary-rgb), 0.15);
+      }
+    }
+
+    @keyframes pulse-urgent {
+      0% {
+        transform: scale(1);
+        color: var(--danger);
+      }
+      100% {
+        transform: scale(1.05);
+        color: #ff527c;
+      }
+    }
+
     .task-checkbox {
       appearance: none;
       width: 20px;
@@ -289,6 +350,17 @@
     
     .task-due i {
       font-size: 0.7rem;
+    }
+    
+    .countdown {
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
+      color: var(--primary);
+      font-weight: 500;
+    }
+    
+    .countdown.urgent {
+      color: var(--danger);
     }
     
     .empty-state {
@@ -443,7 +515,6 @@
   </style>
 </head>
 <body>
-  <!-- Login Screen -->
   <div class="login-container" id="loginScreen">
     <div class="login-card">
       <div class="logo">
@@ -463,8 +534,7 @@
     </div>
   </div>
 
-  <!-- Main App -->
-  <div class="container" id="appScreen" class="hidden">
+  <div class="container hidden" id="appScreen">
     <div class="app-header">
       <h1 class="app-title">My Tasks</h1>
       <button id="logoutBtn" class="btn btn-danger">
@@ -473,15 +543,32 @@
     </div>
     
     <div class="quick-links">
-      <a href="https://codeforces.com/contests" class="quick-link" target="_blank">
-        <i class="fas fa-code"></i> Codeforces
-      </a>
-      <a href="https://www.codechef.com/practice-old" class="quick-link" target="_blank">
-        <i class="fas fa-utensils"></i> CodeChef
-      </a>
-      <a href="https://codebynahid.github.io/nahid-s_note/" class="quick-link" target="_blank">
-        <i class="fas fa-book"></i> Notes
-      </a>
+        <a href="https://codeforces.com/contests" class="quick-link" target="_blank">
+            <i class="fas fa-code"></i> Codeforces
+        </a>
+        <a href="https://www.codechef.com/practice-old" class="quick-link" target="_blank">
+            <i class="fas fa-utensils"></i> CodeChef
+        </a>
+        <a href="https://codebynahid.github.io/nahid-s_note/" class="quick-link" target="_blank">
+            <i class="fas fa-book"></i> Notes
+        </a>
+        <a href="www.youtube.com" class="quick-link" target="_blank">
+             UTube
+        </a>
+        <a href="www.facebook.com" class="quick-link" target="_blank">
+             FB
+        </a>
+        <a href="www.tiktok.com" class="quick-link" target="_blank">
+           TikTok
+        </a>
+        <a href="www.business.facebook.com" class="quick-link" target="_blank">
+           FB Studio
+        </a>
+    </div>
+
+    <div class="global-countdown-card hidden" id="globalCountdownCard">
+      <div class="global-countdown-title" id="globalCountdownTitle">Next Task Due:</div>
+      <div class="global-countdown-value" id="globalCountdownValue"></div>
     </div>
     
     <div class="task-list" id="taskList">
@@ -491,13 +578,11 @@
       </div>
     </div>
     
-    <!-- Floating Action Button -->
     <button class="fab" id="addTaskBtn">
       <i class="fas fa-plus"></i>
     </button>
   </div>
 
-  <!-- Add Task Modal -->
   <div class="modal" id="taskModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -521,7 +606,7 @@
     </div>
   </div>
 
-  <script type="module">
+  <script type="module" >
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
@@ -529,11 +614,11 @@
     // Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyB4vv591Pa8aBDvw7u3pgF67SzWA4gqJGc",
-  authDomain: "reminder-86355.firebaseapp.com",
-  projectId: "reminder-86355",
-  storageBucket: "reminder-86355.firebasestorage.app",
-  messagingSenderId: "806981715955",
-  appId: "1:806981715955:web:101011d39757133414f486"
+        authDomain: "reminder-86355.firebaseapp.com",
+        projectId: "reminder-86355",
+        storageBucket: "reminder-86355.firebasestorage.app",
+        messagingSenderId: "806981715955",
+        appId: "1:806981715955:web:101011d39757133414f486"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -553,15 +638,29 @@
     const closeModalBtn = document.getElementById('closeModal');
     const modal = document.getElementById('taskModal');
 
-    // Auth state
+    // New UI elements for the global countdown
+    const globalCountdownCard = document.getElementById('globalCountdownCard');
+    const globalCountdownTitle = document.getElementById('globalCountdownTitle');
+    const globalCountdownValue = document.getElementById('globalCountdownValue');
+
+    // Store countdown intervals
+    const countdownIntervals = {};
+    let globalCountdownInterval = null;
+
+    // Auth state listener
     onAuthStateChanged(auth, (user) => {
-      if(user) {
+      if (user) {
         loginScreen.classList.add('hidden');
         appScreen.classList.remove('hidden');
         loadTasks(user.uid);
       } else {
         appScreen.classList.add('hidden');
         loginScreen.classList.remove('hidden');
+        // Clear all intervals and task list on logout
+        Object.values(countdownIntervals).forEach(interval => clearInterval(interval));
+        if (globalCountdownInterval) clearInterval(globalCountdownInterval);
+        taskList.innerHTML = '';
+        globalCountdownCard.classList.add('hidden');
       }
     });
 
@@ -570,7 +669,7 @@
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
       
-      if(!email || !password) {
+      if (!email || !password) {
         alert('Please enter both email and password');
         return;
       }
@@ -587,7 +686,7 @@
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
       
-      if(!email || !password) {
+      if (!email || !password) {
         alert('Please enter both email and password');
         return;
       }
@@ -620,7 +719,7 @@
     closeModalBtn.addEventListener('click', closeModal);
     cancelTaskBtn.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => {
-      if(e.target === modal) closeModal();
+      if (e.target === modal) closeModal();
     });
 
     // Save task
@@ -628,64 +727,155 @@
       const msg = document.getElementById('taskMsg').value.trim();
       const dateTime = document.getElementById('taskDateTime').value;
       
-      if(!msg) {
+      if (!msg) {
         alert("Please enter a task description");
         return;
       }
       
-      if(!dateTime) {
+      if (!dateTime) {
         alert("Please select a due date and time");
         return;
       }
       
+      saveTaskBtn.disabled = true;
+      saveTaskBtn.textContent = 'Saving...';
+
       const timestamp = new Date(dateTime).getTime();
       const uid = auth.currentUser.uid;
       
       try {
-        await addDoc(collection(db, "users", uid, "tasks"), { 
-          msg, 
-          timestamp 
+        await addDoc(collection(db, "users", uid, "tasks"), {  
+          msg,  
+          timestamp  
         });
-        closeModal(); // This line ensures modal closes after saving
+        closeModal();
       } catch (err) {
         alert("Error saving task: " + err.message);
+      } finally {
+        saveTaskBtn.disabled = false;
+        saveTaskBtn.textContent = 'Save Task';
       }
     });
 
+    // Format time remaining
+    function formatTimeRemaining(ms) {
+      if (ms <= 0) return "Due now!";
+      
+      const seconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+      
+      const remainingHours = hours % 24;
+      const remainingMinutes = minutes % 60;
+      const remainingSeconds = seconds % 60;
+      
+      let parts = [];
+      if (days > 0) parts.push(`${days}d`);
+      if (remainingHours > 0) parts.push(`${remainingHours}h`);
+      if (remainingMinutes > 0) parts.push(`${remainingMinutes}m`);
+      if (remainingSeconds > 0 && days === 0) parts.push(`${remainingSeconds}s`);
+      
+      return parts.join(" ") + " remaining";
+    }
+
+    // Update countdown display
+    function updateCountdown(taskId, timestamp, element) {
+      const now = Date.now();
+      const diff = timestamp - now;
+      
+      if (diff <= 0) {
+        element.textContent = "Due now!";
+        element.classList.add('urgent');
+        clearInterval(countdownIntervals[taskId]);
+        delete countdownIntervals[taskId];
+        return;
+      }
+      
+      if (diff < 3600000) {
+        element.classList.add('urgent');
+      } else {
+        element.classList.remove('urgent');
+      }
+      
+      element.textContent = formatTimeRemaining(diff);
+    }
+    
+    function updateGlobalCountdown(timestamp) {
+        const now = Date.now();
+        const diff = timestamp - now;
+
+        if (diff > 0) {
+            globalCountdownValue.textContent = formatTimeRemaining(diff);
+            if (diff < 3600000) { // Less than 1 hour
+                globalCountdownCard.classList.add('urgent');
+            } else {
+                globalCountdownCard.classList.remove('urgent');
+            }
+        } else {
+            globalCountdownValue.textContent = "Task is overdue!";
+            globalCountdownCard.classList.add('urgent');
+        }
+    }
+
     // Load tasks for the current user
     function loadTasks(uid) {
+      // Clear all intervals and show loading state
+      Object.values(countdownIntervals).forEach(interval => clearInterval(interval));
+      if (globalCountdownInterval) clearInterval(globalCountdownInterval);
+      
+      taskList.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Loading tasks...</p>
+        </div>
+      `;
+      globalCountdownCard.classList.add('hidden');
+
       const q = query(collection(db, "users", uid, "tasks"), orderBy("timestamp", "asc"));
       
       onSnapshot(q, (snapshot) => {
-        const now = Date.now();
-        const tasks = [];
+        // Clear old intervals and re-render tasks
+        Object.values(countdownIntervals).forEach(interval => clearInterval(interval));
+        if (globalCountdownInterval) clearInterval(globalCountdownInterval);
         
+        const tasks = [];
         snapshot.forEach(docSnap => {
           const data = docSnap.data();
-          if(data.timestamp > now) {
-            tasks.push({ id: docSnap.id, ...data });
-          }
+          tasks.push({ id: docSnap.id, ...data });
         });
 
-        if(tasks.length === 0) {
+        if (tasks.length === 0) {
           taskList.innerHTML = `
             <div class="empty-state">
               <i class="fas fa-tasks"></i>
-              <p>No upcoming tasks. Add your first task!</p>
+              <p>No tasks found. Add your first task!</p>
             </div>
           `;
+          globalCountdownCard.classList.add('hidden');
           return;
         }
 
+        // Set up the global countdown for the very first task
+        const firstTask = tasks[0];
+        globalCountdownCard.classList.remove('hidden');
+        globalCountdownTitle.textContent = `Next Task: ${firstTask.msg}`;
+        updateGlobalCountdown(firstTask.timestamp);
+        globalCountdownInterval = setInterval(() => {
+            updateGlobalCountdown(firstTask.timestamp);
+        }, 1000);
+        
         taskList.innerHTML = '';
         tasks.forEach(task => {
           const taskEl = document.createElement('div');
-          taskEl.className = 'task-item fade-in';
+          taskEl.className = 'task-item fade-in highlight';
           
           const checkbox = document.createElement('input');
           checkbox.type = 'checkbox';
           checkbox.className = 'task-checkbox';
           checkbox.addEventListener('change', async () => {
+            clearInterval(countdownIntervals[task.id]);
+            delete countdownIntervals[task.id];
             await deleteDoc(doc(db, "users", uid, "tasks", task.id));
           });
 
@@ -693,15 +883,24 @@
           text.className = 'task-content';
           
           const dueDate = new Date(task.timestamp);
-          const formattedDate = dueDate.toLocaleDateString('en-US', { 
-            weekday: 'short', 
-            month: 'short', 
-            day: 'numeric' 
+          const formattedDate = dueDate.toLocaleDateString('en-US', {  
+            weekday: 'short',  
+            month: 'short',  
+            day: 'numeric'  
           });
-          const formattedTime = dueDate.toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
+          const formattedTime = dueDate.toLocaleTimeString('en-US', {  
+            hour: '2-digit',  
+            minute: '2-digit'  
           });
+          
+          const countdownEl = document.createElement('div');
+          countdownEl.className = 'countdown';
+          
+          updateCountdown(task.id, task.timestamp, countdownEl);
+          
+          countdownIntervals[task.id] = setInterval(() => {
+            updateCountdown(task.id, task.timestamp, countdownEl);
+          }, 1000);
           
           text.innerHTML = `
             <div class="task-title">${task.msg}</div>
@@ -710,7 +909,8 @@
               ${formattedDate} at ${formattedTime}
             </div>
           `;
-
+          
+          text.appendChild(countdownEl);
           taskEl.appendChild(checkbox);
           taskEl.appendChild(text);
           taskList.appendChild(taskEl);
