@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="shortcut icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/747/747310.png">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-light: #e0e7ff;
+      --secondary: #3f37c9;
+      --success: #4cc9f0;
+      --danger: #f72585;
+      --warning: #f8961e;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #2b2d42;
+      --text-light: #6c757d;
+      --border: #e9ecef;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .hidden { 
+      display: none !important; 
+    }
+    
+    /* Login Screen */
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 40px);
+    }
+    
+    .login-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      transition: var(--transition);
+    }
+    
+    .login-card h2 {
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .logo {
+      font-size: 2.5rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .input-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+    
+    .input-group input,
+    .input-group textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    
+    .input-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .input-group input:focus,
+    .input-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+    
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--secondary);
+    }
+    
+    .btn-block {
+      display: block;
+      width: 100%;
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--primary-light);
+    }
+    
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      opacity: 0.9;
+    }
+    
+    .text-center {
+      text-align: center;
+    }
+    
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+    
+    /* App Screen */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .app-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .quick-links {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .quick-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    
+    .quick-link:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .quick-link i {
+      font-size: 0.9rem;
+    }
+    
+    /* Task List */
+    .task-list {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    
+    .task-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    
+    .task-item:last-child {
+      border-bottom: none;
+    }
+    
+    .task-item:hover {
+      background: rgba(0, 0, 0, 0.02);
+    }
+    
+    .task-checkbox {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      margin-right: 1rem;
+      cursor: pointer;
+      position: relative;
+      transition: var(--transition);
+    }
+    
+    .task-checkbox:checked {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    
+    .task-checkbox:checked::after {
+      content: '\f00c';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      color: white;
+      font-size: 12px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    .task-content {
+      flex: 1;
+    }
+    
+    .task-title {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      word-break: break-word;
+    }
+    
+    .task-due {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .task-due i {
+      font-size: 0.7rem;
+    }
+    
+    .empty-state {
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-light);
+    }
+    
+    .empty-state i {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--border);
+    }
+    
+    /* Floating Action Button */
+    .fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: var(--transition);
+      z-index: 10;
+      border: none;
+    }
+    
+    .fab:hover {
+      background: var(--secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+    
+    .modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(20px);
+      transition: var(--transition);
+    }
+    
+    .modal.show .modal-content {
+      transform: translateY(0);
+    }
+    
+    .modal-header {
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-light);
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+    }
+    
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .quick-links {
+        justify-content: center;
+      }
+      
+      .fab {
+        bottom: 1.5rem;
+        right: 1.5rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 15px;
+      }
+      
+      .login-card {
+        padding: 1.5rem;
+      }
+      
+      .modal-content {
+        width: 95%;
+      }
+    }
+    
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    /* Custom datetime input - REMOVED the custom icon since browser shows its own */
+    .datetime-input input {
+      /* Ensure consistent styling */
+      padding: 0.75rem 1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div class="login-container" id="loginScreen">
+    <div class="login-card">
+      <div class="logo">
+        <i class="fas fa-tasks"></i>
+      </div>
+      <h2>Task Manager</h2>
+      <div class="input-group">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="Enter your email">
+      </div>
+      <div class="input-group">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password">
+      </div>
+      <button id="loginBtn" class="btn btn-primary btn-block">Login</button>
+      <button id="registerBtn" class="btn btn-secondary btn-block mt-1">Create Account</button>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div class="container" id="appScreen" class="hidden">
+    <div class="app-header">
+      <h1 class="app-title">My Tasks</h1>
+      <button id="logoutBtn" class="btn btn-danger">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+    
+    <div class="quick-links">
+      <a href="https://codeforces.com/contests" class="quick-link" target="_blank">
+        <i class="fas fa-code"></i> Codeforces
+      </a>
+      <a href="https://www.codechef.com/practice-old" class="quick-link" target="_blank">
+        <i class="fas fa-utensils"></i> CodeChef
+      </a>
+      <a href="https://codebynahid.github.io/nahid-s_note/" class="quick-link" target="_blank">
+        <i class="fas fa-book"></i> Notes
+      </a>
+    </div>
+    
+    <div class="task-list" id="taskList">
+      <div class="empty-state">
+        <i class="fas fa-tasks"></i>
+        <p>No tasks found. Add your first task!</p>
+      </div>
+    </div>
+    
+    <!-- Floating Action Button -->
+    <button class="fab" id="addTaskBtn">
+      <i class="fas fa-plus"></i>
+    </button>
+  </div>
+
+  <!-- Add Task Modal -->
+  <div class="modal" id="taskModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Add New Task</h3>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label for="taskMsg">Task Description</label>
+          <textarea id="taskMsg" rows="3" placeholder="What do you need to do?"></textarea>
+        </div>
+        <div class="input-group">
+          <label for="taskDateTime">Due Date & Time</label>
+          <input type="datetime-local" id="taskDateTime">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelTask">Cancel</button>
+        <button class="btn btn-primary" id="saveTask">Save Task</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+        apiKey: "AIzaSyB4vv591Pa8aBDvw7u3pgF67SzWA4gqJGc",
+  authDomain: "reminder-86355.firebaseapp.com",
+  projectId: "reminder-86355",
+  storageBucket: "reminder-86355.firebasestorage.app",
+  messagingSenderId: "806981715955",
+  appId: "1:806981715955:web:101011d39757133414f486"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // UI elements
+    const loginScreen = document.getElementById('loginScreen');
+    const appScreen = document.getElementById('appScreen');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const taskList = document.getElementById('taskList');
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const saveTaskBtn = document.getElementById('saveTask');
+    const cancelTaskBtn = document.getElementById('cancelTask');
+    const closeModalBtn = document.getElementById('closeModal');
+    const modal = document.getElementById('taskModal');
+
+    // Auth state
+    onAuthStateChanged(auth, (user) => {
+      if(user) {
+        loginScreen.classList.add('hidden');
+        appScreen.classList.remove('hidden');
+        loadTasks(user.uid);
+      } else {
+        appScreen.classList.add('hidden');
+        loginScreen.classList.remove('hidden');
+      }
+    });
+
+    // Login
+    loginBtn.addEventListener('click', async () => {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      if(!email || !password) {
+        alert('Please enter both email and password');
+        return;
+      }
+      
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    // Register
+    registerBtn.addEventListener('click', async () => {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      if(!email || !password) {
+        alert('Please enter both email and password');
+        return;
+      }
+      
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    // Logout
+    logoutBtn.addEventListener('click', () => {
+      signOut(auth);
+    });
+
+    // Show modal
+    addTaskBtn.addEventListener('click', () => {
+      modal.classList.add('show');
+      document.getElementById('taskMsg').focus();
+    });
+
+    // Close modal
+    function closeModal() {
+      modal.classList.remove('show');
+      document.getElementById('taskMsg').value = '';
+      document.getElementById('taskDateTime').value = '';
+    }
+    
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelTaskBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if(e.target === modal) closeModal();
+    });
+
+    // Save task
+    saveTaskBtn.addEventListener('click', async () => {
+      const msg = document.getElementById('taskMsg').value.trim();
+      const dateTime = document.getElementById('taskDateTime').value;
+      
+      if(!msg) {
+        alert("Please enter a task description");
+        return;
+      }
+      
+      if(!dateTime) {
+        alert("Please select a due date and time");
+        return;
+      }
+      
+      const timestamp = new Date(dateTime).getTime();
+      const uid = auth.currentUser.uid;
+      
+      try {
+        await addDoc(collection(db, "users", uid, "tasks"), { 
+          msg, 
+          timestamp 
+        });
+        closeModal(); // This line ensures modal closes after saving
+      } catch (err) {
+        alert("Error saving task: " + err.message);
+      }
+    });
+
+    // Load tasks for the current user
+    function loadTasks(uid) {
+      const q = query(collection(db, "users", uid, "tasks"), orderBy("timestamp", "asc"));
+      
+      onSnapshot(q, (snapshot) => {
+        const now = Date.now();
+        const tasks = [];
+        
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          if(data.timestamp > now) {
+            tasks.push({ id: docSnap.id, ...data });
+          }
+        });
+
+        if(tasks.length === 0) {
+          taskList.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-tasks"></i>
+              <p>No upcoming tasks. Add your first task!</p>
+            </div>
+          `;
+          return;
+        }
+
+        taskList.innerHTML = '';
+        tasks.forEach(task => {
+          const taskEl = document.createElement('div');
+          taskEl.className = 'task-item fade-in';
+          
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.className = 'task-checkbox';
+          checkbox.addEventListener('change', async () => {
+            await deleteDoc(doc(db, "users", uid, "tasks", task.id));
+          });
+
+          const text = document.createElement('div');
+          text.className = 'task-content';
+          
+          const dueDate = new Date(task.timestamp);
+          const formattedDate = dueDate.toLocaleDateString('en-US', { 
+            weekday: 'short', 
+            month: 'short', 
+            day: 'numeric' 
+          });
+          const formattedTime = dueDate.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          });
+          
+          text.innerHTML = `
+            <div class="task-title">${task.msg}</div>
+            <div class="task-due">
+              <i class="fas fa-clock"></i>
+              ${formattedDate} at ${formattedTime}
+            </div>
+          `;
+
+          taskEl.appendChild(checkbox);
+          taskEl.appendChild(text);
+          taskList.appendChild(taskEl);
+        });
+      });
+    }
+    
+    // Set minimum datetime to current time
+    document.getElementById('taskDateTime').min = new Date().toISOString().slice(0, 16);
+  </script>
+</body>
+</html>
